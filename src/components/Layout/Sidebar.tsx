@@ -45,9 +45,12 @@ export function Sidebar() {
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-tes-gold/20 px-4 py-3">
-          <div>
-            <h1 className="text-sm font-bold text-tes-gold">TES Companion</h1>
-            <p className="text-xs text-tes-parchment/50">Betrayal of the Second Era</p>
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="TES Logo" className="h-8 w-8" />
+            <div>
+              <h1 className="text-sm font-bold text-tes-gold">TES Companion</h1>
+              <p className="text-xs text-tes-parchment/50">Betrayal of the Second Era</p>
+            </div>
           </div>
           <button
             onClick={toggleSidebar}

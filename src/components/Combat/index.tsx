@@ -47,11 +47,17 @@ export function Combat() {
 
 // ============ ROUNDS REFERENCE ============
 function RoundsReference() {
+  const [startOfBattleOpen, setStartOfBattleOpen] = useState(false)
+
   return (
     <div className="p-6">
       <h2 className="mb-4 text-xl font-bold text-tes-gold">Combat Rounds</h2>
 
-      <SubSection title="Start of Battle">
+      <CollapsibleSection
+        title="Start of Battle"
+        isOpen={startOfBattleOpen}
+        onToggle={() => setStartOfBattleOpen(!startOfBattleOpen)}
+      >
         <BulletList
           items={[
             "Select First Player (cannot change during battle)",
@@ -68,7 +74,7 @@ function RoundsReference() {
             </>,
           ]}
         />
-      </SubSection>
+      </CollapsibleSection>
 
       <div className="rounded-lg border border-tes-gold/20 bg-tes-dark/30 p-4">
         <NumberedList
@@ -273,6 +279,42 @@ function EnemySkillsReference() {
 }
 
 // ============ HELPER COMPONENTS ============
+function CollapsibleSection({
+  title,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  title: string
+  isOpen: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="mb-6 rounded-lg border border-tes-gold/20 bg-tes-dark/30">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between px-4 py-3 text-left"
+      >
+        <h3 className="text-lg font-semibold text-tes-parchment">{title}</h3>
+        <svg
+          className={`h-5 w-5 text-tes-gold transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="border-t border-tes-gold/10 px-4 py-3 text-sm text-tes-parchment/80">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-6">

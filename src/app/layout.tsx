@@ -4,6 +4,10 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "TES: Betrayal of the Second Era - Companion",
   description: "Companion app for The Elder Scrolls: Betrayal of the Second Era board game",
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
 }
 
 export default function RootLayout({
