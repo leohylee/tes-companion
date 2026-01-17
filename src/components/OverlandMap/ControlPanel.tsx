@@ -5,7 +5,7 @@ import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { useMapStore } from "@/stores/mapStore"
 
 export function ControlPanel() {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [showTokenMenu, setShowTokenMenu] = useState(false)
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
   const [tokenLabel, setTokenLabel] = useState("")

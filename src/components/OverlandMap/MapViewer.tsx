@@ -46,17 +46,14 @@ export function MapViewer() {
       >
         <TransformComponent
           wrapperClass="!h-full !w-full"
-          contentClass="!h-full !w-full"
+          contentClass="flex !h-full !w-full items-center justify-center"
         >
-          <div
-            className="relative h-full w-full"
-            onDoubleClick={handleDoubleClick}
-          >
+          <div className="relative inline-block" onDoubleClick={handleDoubleClick}>
             {/* Map Image */}
             <img
               src={currentMap.imagePath}
               alt={currentMap.name}
-              className="h-full w-full object-contain"
+              className="block max-h-[90vh] max-w-full"
               draggable={false}
             />
 

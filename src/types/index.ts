@@ -65,3 +65,75 @@ export interface MapActions {
   // Persistence
   resetState: () => void
 }
+
+// Character Types
+export type RaceId =
+  | "argonian"
+  | "breton"
+  | "dark-elf"
+  | "high-elf"
+  | "imperial"
+  | "khajiit"
+  | "nord"
+  | "orc"
+  | "redguard"
+  | "wood-elf"
+
+export type ClassId =
+  | "acrobat"
+  | "archer"
+  | "bard"
+  | "dragonknight"
+  | "healer"
+  | "necromancer"
+  | "nightblade"
+  | "pilgrim"
+  | "rogue"
+  | "scout"
+  | "sorcerer"
+  | "spellsword"
+  | "templar"
+  | "warden"
+
+export type RaceVariant = 1 | 2 | 3 | 4
+
+export interface Race {
+  id: RaceId
+  name: string
+}
+
+export interface CharacterClass {
+  id: ClassId
+  name: string
+}
+
+export interface Skill {
+  id: string
+  name: string
+}
+
+export interface Character {
+  id: string
+  name: string
+  race: RaceId
+  raceVariant: RaceVariant
+  classId: ClassId
+  isMaster: boolean
+  skills: Skill[]
+}
+
+export interface CharacterState {
+  characters: Character[]
+  selectedCharacterId: string | null
+}
+
+export interface CharacterActions {
+  addCharacter: (character: Omit<Character, "id">) => void
+  updateCharacter: (id: string, updates: Partial<Omit<Character, "id">>) => void
+  removeCharacter: (id: string) => void
+  selectCharacter: (id: string | null) => void
+  addSkill: (characterId: string, skill: Omit<Skill, "id">) => void
+  removeSkill: (characterId: string, skillId: string) => void
+  toggleMaster: (characterId: string) => void
+  resetState: () => void
+}

@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/Layout/Sidebar"
 import { OverlandMap } from "@/components/OverlandMap"
+import { Characters } from "@/components/Characters"
 import { InitialSetup } from "@/components/References/InitialSetup"
 import { CampaignStages } from "@/components/References/CampaignStages"
 import { DayPhases } from "@/components/References/DayPhases"
@@ -22,6 +23,7 @@ export default function Home() {
       >
         {/* Tools */}
         {currentView === "overland-maps" && <OverlandMap />}
+        {currentView === "characters" && <Characters />}
 
         {/* References */}
         {currentView === "initial-setup" && <InitialSetup />}
