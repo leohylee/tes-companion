@@ -2,11 +2,14 @@
 
 import { Sidebar } from "@/components/Layout/Sidebar"
 import { OverlandMap } from "@/components/OverlandMap"
-import { EnemySkills } from "@/components/EnemySkills"
+import { InitialSetup } from "@/components/References/InitialSetup"
+import { CampaignStages } from "@/components/References/CampaignStages"
+import { DayPhases } from "@/components/References/DayPhases"
+import { Combat } from "@/components/Combat"
 import { useAppStore } from "@/stores/appStore"
 
 export default function Home() {
-  const { currentTool, sidebarOpen } = useAppStore()
+  const { currentView, sidebarOpen } = useAppStore()
 
   return (
     <main className="h-screen w-screen overflow-hidden">
@@ -17,8 +20,14 @@ export default function Home() {
         className="h-full transition-all"
         style={{ marginLeft: sidebarOpen ? "180px" : "0" }}
       >
-        {currentTool === "overland-maps" && <OverlandMap />}
-        {currentTool === "enemy-skills" && <EnemySkills />}
+        {/* Tools */}
+        {currentView === "overland-maps" && <OverlandMap />}
+
+        {/* References */}
+        {currentView === "initial-setup" && <InitialSetup />}
+        {currentView === "campaign-stages" && <CampaignStages />}
+        {currentView === "day-phases" && <DayPhases />}
+        {currentView === "combat" && <Combat />}
       </div>
     </main>
   )
