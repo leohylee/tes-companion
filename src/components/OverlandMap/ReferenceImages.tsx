@@ -104,7 +104,7 @@ export function ReferenceImages({ images }: ReferenceImagesProps) {
         return (
           <div
             key={imagePath}
-            className={`fixed z-30 select-none rounded-lg bg-tes-dark/95 shadow-xl backdrop-blur transition-all ${
+            className={`absolute z-30 select-none rounded-lg bg-tes-dark/95 shadow-xl backdrop-blur transition-all ${
               draggingImage === imagePath ? "cursor-grabbing" : "cursor-grab"
             }`}
             style={{
