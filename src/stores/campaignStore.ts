@@ -43,6 +43,8 @@ export const useCampaignStore = create<ExtendedCampaignState & ExtendedCampaignA
           characterHp: c.characterHp || {},
           characterXp: c.characterXp || {},
           overland: c.overland || null,
+          mapTokens: c.mapTokens || [],
+          mapMarkers: c.mapMarkers || [],
           guild: c.guild || "",
           guildQuests: c.guildQuests || [],
         }))

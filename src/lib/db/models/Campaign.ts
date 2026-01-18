@@ -11,6 +11,19 @@ export interface ICampaign extends Document {
   characterHp: Record<string, number>
   characterXp: Record<string, number>
   overland: string | null
+  mapTokens: Array<{
+    id: string
+    position: { x: number; y: number }
+    icon: string
+    label: string
+    color: string
+  }>
+  mapMarkers: Array<{
+    id: string
+    position: { x: number; y: number }
+    type: string
+    label?: string
+  }>
   guild: string
   guildQuests: string[]
   createdAt: Date
@@ -65,6 +78,31 @@ const CampaignSchema = new Schema<ICampaign>(
     overland: {
       type: String,
       default: null,
+    },
+    mapTokens: {
+      type: [{
+        id: String,
+        position: {
+          x: Number,
+          y: Number,
+        },
+        icon: String,
+        label: String,
+        color: String,
+      }],
+      default: [],
+    },
+    mapMarkers: {
+      type: [{
+        id: String,
+        position: {
+          x: Number,
+          y: Number,
+        },
+        type: String,
+        label: String,
+      }],
+      default: [],
     },
     guild: {
       type: String,

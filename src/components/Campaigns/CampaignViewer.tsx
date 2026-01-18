@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Campaign, Character } from "@/types"
 import { useCharacterStore } from "@/stores/characterStore"
 import { CampaignOverview } from "./CampaignOverview"
+import { CampaignMap } from "./CampaignMap"
 import { CharacterViewer } from "@/components/Characters/CharacterViewer"
 
 interface CampaignViewerProps {
@@ -11,7 +12,7 @@ interface CampaignViewerProps {
   onBack: () => void
 }
 
-type TabType = "overview" | string // "overview" or character ID
+type TabType = "overview" | "map" | string // "overview", "map", or character ID
 
 export function CampaignViewer({ campaign, onBack }: CampaignViewerProps) {
   const [activeTab, setActiveTab] = useState<TabType>("overview")
@@ -24,13 +25,13 @@ export function CampaignViewer({ campaign, onBack }: CampaignViewerProps) {
 
   // Reset to overview if active character tab is removed
   useEffect(() => {
-    if (activeTab !== "overview" && !campaign.characterIds.includes(activeTab)) {
+    if (activeTab !== "overview" && activeTab !== "map" && !campaign.characterIds.includes(activeTab)) {
       setActiveTab("overview")
     }
   }, [activeTab, campaign.characterIds])
 
   const activeCharacter =
-    activeTab !== "overview"
+    activeTab !== "overview" && activeTab !== "map"
       ? campaignCharacters.find((c) => c.id === activeTab)
       : null
 
@@ -64,6 +65,18 @@ export function CampaignViewer({ campaign, onBack }: CampaignViewerProps) {
             Overview
           </button>
 
+          {/* Map Tab */}
+          <button
+            onClick={() => setActiveTab("map")}
+            className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "map"
+                ? "bg-tes-gold/20 text-tes-gold"
+                : "text-tes-parchment/60 hover:bg-tes-gold/10 hover:text-tes-parchment"
+            }`}
+          >
+            Map
+          </button>
+
           {/* Divider */}
           {campaignCharacters.length > 0 && (
             <div className="mx-2 h-4 w-px bg-tes-gold/20" />
@@ -87,9 +100,11 @@ export function CampaignViewer({ campaign, onBack }: CampaignViewerProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-auto pt-4">
+      <div className={`flex-1 overflow-auto ${activeTab !== "map" ? "pt-4" : ""}`}>
         {activeTab === "overview" ? (
           <CampaignOverview campaign={campaign} characters={campaignCharacters} />
+        ) : activeTab === "map" ? (
+          <CampaignMap campaign={campaign} />
         ) : activeCharacter ? (
           <CharacterViewer character={activeCharacter} hideHeader />
         ) : null}

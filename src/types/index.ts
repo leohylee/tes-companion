@@ -164,6 +164,8 @@ export interface Campaign {
   characterHp: Record<string, number>
   characterXp: Record<string, number>
   overland: MapId | null
+  mapTokens: Token[]
+  mapMarkers: Marker[]
   guild: string
   guildQuests: string[]
   createdAt: number
