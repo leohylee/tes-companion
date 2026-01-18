@@ -18,13 +18,20 @@ interface CharacterViewerProps {
 }
 
 // Fixed height for all images - remaining screen height minus header, labels, and footers
-const IMAGE_HEIGHT_CLASS = "h-[calc(100vh-220px)]"
-const SKILL_IMAGE_HEIGHT_CLASS = "h-[calc(100vh-280px)]" // Extra space for tabs and skill name
+const IMAGE_HEIGHT_CLASS = "h-[calc(100vh-230px)]"
+const SKILL_IMAGE_HEIGHT_CLASS = "h-[calc(100vh-250px)]" // Extra space for tabs
+
+interface ImagePopupState {
+  src: string
+  alt: string
+}
 
 export function CharacterViewer({ character }: CharacterViewerProps) {
   const { addSkill, removeSkill, toggleMaster } = useCharacterStore()
   const [showAddSkill, setShowAddSkill] = useState(false)
   const [selectedSkillIndex, setSelectedSkillIndex] = useState(0)
+  const [imagePopup, setImagePopup] = useState<ImagePopupState | null>(null)
+  const [imageScale, setImageScale] = useState(100)
 
   const raceName = RACES.find((r) => r.id === character.race)?.name || character.race
   const className = CLASSES.find((c) => c.id === character.classId)?.name || character.classId
@@ -51,8 +58,76 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
     setSelectedSkillIndex(character.skills.length - 1)
   }
 
+  const openImagePopup = (src: string, alt: string) => {
+    setImagePopup({ src, alt })
+    setImageScale(100)
+  }
+
+  const closeImagePopup = () => {
+    setImagePopup(null)
+    setImageScale(100)
+  }
+
   return (
     <div className="h-full overflow-hidden">
+      {/* Image Popup Modal */}
+      {imagePopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={closeImagePopup}
+        >
+          <div
+            className="relative max-h-[90vh] max-w-[90vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeImagePopup}
+              className="absolute -right-2 -top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-tes-dark text-tes-parchment/70 hover:bg-tes-darker hover:text-tes-parchment"
+            >
+              ×
+            </button>
+
+            {/* Image */}
+            <div className="overflow-auto rounded-lg bg-tes-dark/50" style={{ maxHeight: '80vh', maxWidth: '85vw' }}>
+              <Image
+                src={imagePopup.src}
+                alt={imagePopup.alt}
+                width={800}
+                height={1200}
+                className="h-auto transition-transform duration-200"
+                style={{ width: `${imageScale * 4}px` }}
+              />
+            </div>
+
+            {/* Scale controls */}
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <button
+                onClick={() => setImageScale(Math.max(25, imageScale - 25))}
+                className="flex h-8 w-8 items-center justify-center rounded bg-tes-gold/20 text-tes-gold hover:bg-tes-gold/30"
+              >
+                −
+              </button>
+              <span className="w-16 text-center text-sm text-tes-parchment">
+                {imageScale}%
+              </span>
+              <button
+                onClick={() => setImageScale(Math.min(200, imageScale + 25))}
+                className="flex h-8 w-8 items-center justify-center rounded bg-tes-gold/20 text-tes-gold hover:bg-tes-gold/30"
+              >
+                +
+              </button>
+              <button
+                onClick={() => setImageScale(100)}
+                className="ml-2 rounded bg-tes-parchment/10 px-3 py-1 text-xs text-tes-parchment/70 hover:bg-tes-parchment/20"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header with Name */}
       <div className="mb-4 px-6 pt-4">
         <h1 className="text-3xl font-bold text-tes-gold">{character.name}</h1>
@@ -78,7 +153,8 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                 alt={raceName}
                 width={400}
                 height={600}
-                className={`${IMAGE_HEIGHT_CLASS} w-auto`}
+                className={`${IMAGE_HEIGHT_CLASS} w-auto cursor-pointer hover:opacity-90`}
+                onClick={() => openImagePopup(getRaceImagePath(character.race, character.raceVariant), raceName)}
               />
               <div className="bg-tes-dark/80 p-3">
                 <p className="text-center font-medium text-tes-parchment">
@@ -109,7 +185,8 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                 alt={className}
                 width={400}
                 height={600}
-                className={`${IMAGE_HEIGHT_CLASS} w-auto`}
+                className={`${IMAGE_HEIGHT_CLASS} w-auto cursor-pointer hover:opacity-90`}
+                onClick={() => openImagePopup(getClassImagePath(character.classId, character.isMaster), className)}
               />
               <div className="bg-tes-dark/80 p-3">
                 <p className="text-center font-medium text-tes-parchment">
@@ -223,7 +300,8 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                           alt={`${getSkillName(currentSkill.skillId)} - Page 1`}
                           width={400}
                           height={600}
-                          className={`${SKILL_IMAGE_HEIGHT_CLASS} w-auto`}
+                          className={`${SKILL_IMAGE_HEIGHT_CLASS} w-auto cursor-pointer hover:opacity-90`}
+                          onClick={() => openImagePopup(getSkillImagePath(currentSkill.skillId, 1), `${getSkillName(currentSkill.skillId)} - Page 1`)}
                         />
                         <div className="bg-tes-dark/80 p-2">
                           <p className="text-center text-xs text-tes-parchment/50">
@@ -238,7 +316,8 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                           alt={`${getSkillName(currentSkill.skillId)} - Page 2`}
                           width={400}
                           height={600}
-                          className={`${SKILL_IMAGE_HEIGHT_CLASS} w-auto`}
+                          className={`${SKILL_IMAGE_HEIGHT_CLASS} w-auto cursor-pointer hover:opacity-90`}
+                          onClick={() => openImagePopup(getSkillImagePath(currentSkill.skillId, 2), `${getSkillName(currentSkill.skillId)} - Page 2`)}
                         />
                         <div className="bg-tes-dark/80 p-2">
                           <p className="text-center text-xs text-tes-parchment/50">
@@ -247,9 +326,6 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                         </div>
                       </div>
                     </div>
-                    <p className="mt-2 text-center text-sm font-medium text-tes-parchment">
-                      {getSkillName(currentSkill.skillId)}
-                    </p>
                   </>
                 )}
               </div>
