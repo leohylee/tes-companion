@@ -26,6 +26,10 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
   const [localCharacterHp, setLocalCharacterHp] = useState<Record<string, number>>(campaign.characterHp || {})
   const [localCharacterXp, setLocalCharacterXp] = useState<Record<string, number>>(campaign.characterXp || {})
   const [localGuildQuests, setLocalGuildQuests] = useState<string[]>(campaign.guildQuests || [])
+  const [localStartDate, setLocalStartDate] = useState(campaign.startDate || "")
+  const [localEndDate, setLocalEndDate] = useState(campaign.endDate || "")
+  const [localDifficulty, setLocalDifficulty] = useState(campaign.difficulty || "")
+  const [localJournal, setLocalJournal] = useState(campaign.journal || "")
 
   // Sync local state only when switching campaigns
   useEffect(() => {
@@ -36,6 +40,10 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
     setLocalCharacterHp(campaign.characterHp || {})
     setLocalCharacterXp(campaign.characterXp || {})
     setLocalGuildQuests(campaign.guildQuests || [])
+    setLocalStartDate(campaign.startDate || "")
+    setLocalEndDate(campaign.endDate || "")
+    setLocalDifficulty(campaign.difficulty || "")
+    setLocalJournal(campaign.journal || "")
     setIsDirty(false)
   }, [campaign.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -95,6 +103,26 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
     setIsDirty(true)
   }
 
+  const handleStartDateChange = (value: string) => {
+    setLocalStartDate(value)
+    setIsDirty(true)
+  }
+
+  const handleEndDateChange = (value: string) => {
+    setLocalEndDate(value)
+    setIsDirty(true)
+  }
+
+  const handleDifficultyChange = (value: string) => {
+    setLocalDifficulty(value)
+    setIsDirty(true)
+  }
+
+  const handleJournalChange = (value: string) => {
+    setLocalJournal(value)
+    setIsDirty(true)
+  }
+
   // Save all changes to database
   const handleSave = async () => {
     setSaving(true)
@@ -107,6 +135,10 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
         overland: (localOverland || null) as MapId | null,
         guild: localGuild,
         guildQuests: localGuildQuests,
+        startDate: localStartDate,
+        endDate: localEndDate,
+        difficulty: localDifficulty,
+        journal: localJournal,
       })
       setIsDirty(false)
     } catch (error) {
@@ -218,6 +250,39 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
       <h2 className="mb-4 text-xl font-semibold text-tes-gold">Campaign Log</h2>
 
       <div className="space-y-4">
+        {/* Start Date & End Date */}
+        <div className="flex items-center gap-4">
+          <label className="w-24 text-sm text-tes-parchment/70">Start Date</label>
+          <input
+            type="date"
+            value={localStartDate}
+            onChange={(e) => handleStartDateChange(e.target.value)}
+            className="rounded-lg border border-tes-gold/20 bg-tes-dark px-3 py-2 text-tes-parchment focus:border-tes-gold/50 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+          />
+          <label className="ml-4 text-sm text-tes-parchment/70">End Date</label>
+          <input
+            type="date"
+            value={localEndDate}
+            onChange={(e) => handleEndDateChange(e.target.value)}
+            className="rounded-lg border border-tes-gold/20 bg-tes-dark px-3 py-2 text-tes-parchment focus:border-tes-gold/50 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
+          />
+        </div>
+
+        {/* Difficulty */}
+        <div className="flex items-center gap-4">
+          <label className="w-24 text-sm text-tes-parchment/70">Difficulty</label>
+          <select
+            value={localDifficulty}
+            onChange={(e) => handleDifficultyChange(e.target.value)}
+            className="rounded-lg border border-tes-gold/20 bg-tes-dark px-3 py-2 text-tes-parchment focus:border-tes-gold/50 focus:outline-none"
+          >
+            <option value="">Select difficulty...</option>
+            <option value="apprentice">Apprentice</option>
+            <option value="adept">Adept</option>
+            <option value="expert">Expert</option>
+          </select>
+        </div>
+
         {/* Day Tracker */}
         <div className="flex items-center gap-4">
           <label className="w-24 text-sm text-tes-parchment/70">Day</label>
@@ -337,6 +402,18 @@ export function CampaignOverview({ campaign, characters }: CampaignOverviewProps
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Journal */}
+        <div className="flex items-start gap-4">
+          <label className="w-24 pt-2 text-sm text-tes-parchment/70">Journal</label>
+          <textarea
+            value={localJournal}
+            onChange={(e) => handleJournalChange(e.target.value)}
+            placeholder="Campaign notes..."
+            rows={4}
+            className="flex-1 rounded-lg border border-tes-gold/20 bg-tes-dark px-3 py-2 text-tes-parchment placeholder-tes-parchment/30 focus:border-tes-gold/50 focus:outline-none resize-none"
+          />
         </div>
       </div>
     </div>

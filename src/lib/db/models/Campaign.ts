@@ -26,6 +26,10 @@ export interface ICampaign extends Document {
   }>
   guild: string
   guildQuests: string[]
+  startDate: string
+  endDate: string
+  difficulty: string
+  journal: string
   createdAt: Date
   updatedAt: Date
 }
@@ -111,6 +115,22 @@ const CampaignSchema = new Schema<ICampaign>(
     guildQuests: {
       type: [String],
       default: [],
+    },
+    startDate: {
+      type: String,
+      default: "",
+    },
+    endDate: {
+      type: String,
+      default: "",
+    },
+    difficulty: {
+      type: String,
+      default: "",
+    },
+    journal: {
+      type: String,
+      default: "",
     },
   },
   {

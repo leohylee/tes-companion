@@ -47,6 +47,10 @@ export const useCampaignStore = create<ExtendedCampaignState & ExtendedCampaignA
           mapMarkers: c.mapMarkers || [],
           guild: c.guild || "",
           guildQuests: c.guildQuests || [],
+          startDate: c.startDate || "",
+          endDate: c.endDate || "",
+          difficulty: c.difficulty || "",
+          journal: c.journal || "",
         }))
         set({ campaigns: normalizedCampaigns, loading: false })
       } catch (error) {

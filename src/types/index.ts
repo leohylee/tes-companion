@@ -168,6 +168,10 @@ export interface Campaign {
   mapMarkers: Marker[]
   guild: string
   guildQuests: string[]
+  startDate: string
+  endDate: string
+  difficulty: string
+  journal: string
   createdAt: number
 }
 

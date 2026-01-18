@@ -33,6 +33,10 @@ export async function GET() {
       mapMarkers: campaign.mapMarkers || [],
       guild: campaign.guild || "",
       guildQuests: campaign.guildQuests || [],
+      startDate: campaign.startDate || "",
+      endDate: campaign.endDate || "",
+      difficulty: campaign.difficulty || "",
+      journal: campaign.journal || "",
       createdAt: campaign.createdAt?.getTime() || Date.now(),
     }))
 
@@ -104,6 +108,10 @@ export async function POST(request: NextRequest) {
         mapMarkers: campaign.mapMarkers || [],
         guild: campaign.guild || "",
         guildQuests: campaign.guildQuests || [],
+        startDate: campaign.startDate || "",
+        endDate: campaign.endDate || "",
+        difficulty: campaign.difficulty || "",
+        journal: campaign.journal || "",
         createdAt: campaign.createdAt?.getTime() || Date.now(),
       },
       { status: 201 }
