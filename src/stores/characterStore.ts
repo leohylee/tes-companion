@@ -10,6 +10,8 @@ import {
   RaceId,
   ClassId,
   RaceVariant,
+  SkillId,
+  SkillPage,
 } from "@/types"
 
 const initialState: CharacterState = {
@@ -42,6 +44,7 @@ export const CLASSES: { id: ClassId; name: string }[] = [
   { id: "bard", name: "Bard" },
   { id: "dragonknight", name: "Dragonknight" },
   { id: "healer", name: "Healer" },
+  { id: "knight", name: "Knight" },
   { id: "necromancer", name: "Necromancer" },
   { id: "nightblade", name: "Nightblade" },
   { id: "pilgrim", name: "Pilgrim" },
@@ -60,6 +63,24 @@ export function getRaceImagePath(raceId: RaceId, variant: RaceVariant): string {
 
 export function getClassImagePath(classId: ClassId, isMaster: boolean): string {
   return `/images/classes/${classId}-${isMaster ? "master" : "novice"}.png`
+}
+
+// Skill display names
+export const SKILLS: { id: SkillId; name: string }[] = [
+  { id: "acrobatics", name: "Acrobatics" },
+  { id: "bow", name: "Bow" },
+  { id: "daedric-summoning", name: "Daedric Summoning" },
+  { id: "destruction-staff", name: "Destruction Staff" },
+  { id: "heavy-armor", name: "Heavy Armor" },
+  { id: "one-hand-and-shield", name: "One Hand and Shield" },
+  { id: "restoring-light", name: "Restoring Light" },
+  { id: "shadow", name: "Shadow" },
+  { id: "speech", name: "Speech" },
+  { id: "two-handed", name: "Two Handed" },
+]
+
+export function getSkillImagePath(skillId: SkillId, page: SkillPage): string {
+  return `/images/skills/${skillId}-${page}.png`
 }
 
 export const useCharacterStore = create<CharacterState & CharacterActions>()(
@@ -98,10 +119,10 @@ export const useCharacterStore = create<CharacterState & CharacterActions>()(
         set({ selectedCharacterId: id })
       },
 
-      addSkill: (characterId, skill) => {
+      addSkill: (characterId, skillId) => {
         const newSkill: Skill = {
-          ...skill,
           id: generateId(),
+          skillId,
         }
         set((state) => ({
           characters: state.characters.map((c) =>

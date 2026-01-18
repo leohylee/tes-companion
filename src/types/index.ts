@@ -85,6 +85,7 @@ export type ClassId =
   | "bard"
   | "dragonknight"
   | "healer"
+  | "knight"
   | "necromancer"
   | "nightblade"
   | "pilgrim"
@@ -107,9 +108,23 @@ export interface CharacterClass {
   name: string
 }
 
+export type SkillId =
+  | "acrobatics"
+  | "bow"
+  | "daedric-summoning"
+  | "destruction-staff"
+  | "heavy-armor"
+  | "one-hand-and-shield"
+  | "restoring-light"
+  | "shadow"
+  | "speech"
+  | "two-handed"
+
+export type SkillPage = 1 | 2
+
 export interface Skill {
   id: string
-  name: string
+  skillId: SkillId
 }
 
 export interface Character {
@@ -132,7 +147,7 @@ export interface CharacterActions {
   updateCharacter: (id: string, updates: Partial<Omit<Character, "id">>) => void
   removeCharacter: (id: string) => void
   selectCharacter: (id: string | null) => void
-  addSkill: (characterId: string, skill: Omit<Skill, "id">) => void
+  addSkill: (characterId: string, skillId: SkillId) => void
   removeSkill: (characterId: string, skillId: string) => void
   toggleMaster: (characterId: string) => void
   resetState: () => void
