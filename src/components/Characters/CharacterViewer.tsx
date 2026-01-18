@@ -193,21 +193,21 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
                 </p>
               </div>
             ) : (
-              <div>
+              <div className="inline-flex flex-col">
                 {/* Current Skill Display */}
                 {currentSkill && (
                   <>
                     {/* Skill Tabs */}
                     {character.skills.length > 1 && (
-                      <div className="mb-2 flex gap-1 overflow-x-auto">
+                      <div className="mb-1 flex w-0 min-w-full gap-0.5 overflow-x-auto [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-tes-parchment/20 [&::-webkit-scrollbar-track]:bg-transparent">
                         {character.skills.map((skill, index) => (
                           <button
                             key={skill.id}
                             onClick={() => setSelectedSkillIndex(index)}
-                            className={`whitespace-nowrap rounded px-2 py-1 text-xs transition-colors ${
+                            className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] transition-colors ${
                               selectedSkillIndex === index
-                                ? "bg-tes-gold text-tes-dark"
-                                : "bg-tes-gold/20 text-tes-gold hover:bg-tes-gold/30"
+                                ? "bg-tes-parchment/20 text-tes-parchment"
+                                : "bg-tes-parchment/5 text-tes-parchment/40 hover:bg-tes-parchment/10 hover:text-tes-parchment/60"
                             }`}
                           >
                             {getSkillName(skill.skillId)}
