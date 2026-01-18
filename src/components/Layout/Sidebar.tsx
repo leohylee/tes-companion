@@ -1,9 +1,13 @@
 "use client"
 
+import { useSession, signOut } from "next-auth/react"
 import { useAppStore, tools, references, ViewId } from "@/stores/appStore"
+import { useCharacterStore } from "@/stores/characterStore"
 
 export function Sidebar() {
+  const { data: session } = useSession()
   const { currentView, setCurrentView, sidebarOpen, toggleSidebar } = useAppStore()
+  const { resetState: resetCharacters } = useCharacterStore()
 
   const NavButton = ({ id, name, icon }: { id: ViewId; name: string; icon: string }) => (
     <button
@@ -63,30 +67,48 @@ export function Sidebar() {
           </button>
         </div>
 
-        <div className="h-[calc(100%-60px)] overflow-y-auto">
-          {/* Tools Section */}
-          <nav className="p-2">
-            <p className="mb-2 px-2 text-xs font-medium uppercase text-tes-parchment/40">Tools</p>
-            <ul className="space-y-1">
-              {tools.map((item) => (
-                <li key={item.id}>
-                  <NavButton {...item} />
-                </li>
-              ))}
-            </ul>
-          </nav>
+        <div className="flex h-[calc(100%-60px)] flex-col">
+          <div className="flex-1 overflow-y-auto">
+            {/* Tools Section */}
+            <nav className="p-2">
+              <p className="mb-2 px-2 text-xs font-medium uppercase text-tes-parchment/40">Tools</p>
+              <ul className="space-y-1">
+                {tools.map((item) => (
+                  <li key={item.id}>
+                    <NavButton {...item} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          {/* References Section */}
-          <nav className="p-2 pt-0">
-            <p className="mb-2 px-2 text-xs font-medium uppercase text-tes-parchment/40">References</p>
-            <ul className="space-y-1">
-              {references.map((item) => (
-                <li key={item.id}>
-                  <NavButton {...item} />
-                </li>
-              ))}
-            </ul>
-          </nav>
+            {/* References Section */}
+            <nav className="p-2 pt-0">
+              <p className="mb-2 px-2 text-xs font-medium uppercase text-tes-parchment/40">References</p>
+              <ul className="space-y-1">
+                {references.map((item) => (
+                  <li key={item.id}>
+                    <NavButton {...item} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* User Info */}
+          {session?.user && (
+            <div className="border-t border-tes-gold/20 p-3">
+              <p className="truncate text-sm text-tes-parchment/70">{session.user.name}</p>
+              <button
+                onClick={() => {
+                  resetCharacters()
+                  signOut()
+                }}
+                className="mt-2 w-full rounded bg-tes-parchment/10 px-3 py-1.5 text-xs text-tes-parchment/50 hover:bg-tes-parchment/20 hover:text-tes-parchment"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>

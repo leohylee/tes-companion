@@ -15,6 +15,7 @@ import { Character, SkillId } from "@/types"
 
 interface CharacterViewerProps {
   character: Character
+  hideHeader?: boolean
 }
 
 // Fixed height for all images - remaining screen height minus header, labels, and footers
@@ -26,7 +27,7 @@ interface ImagePopupState {
   alt: string
 }
 
-export function CharacterViewer({ character }: CharacterViewerProps) {
+export function CharacterViewer({ character, hideHeader = false }: CharacterViewerProps) {
   const { addSkill, removeSkill, toggleMaster } = useCharacterStore()
   const [showAddSkill, setShowAddSkill] = useState(false)
   const [selectedSkillIndex, setSelectedSkillIndex] = useState(0)
@@ -129,17 +130,19 @@ export function CharacterViewer({ character }: CharacterViewerProps) {
       )}
 
       {/* Header with Name */}
-      <div className="mb-4 px-6 pt-4">
-        <h1 className="text-3xl font-bold text-tes-gold">{character.name}</h1>
-        <p className="text-tes-parchment/70">
-          {raceName} {className}
-          {character.isMaster && (
-            <span className="ml-2 rounded bg-tes-gold/20 px-2 py-0.5 text-xs text-tes-gold">
-              Master
-            </span>
-          )}
-        </p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-4 px-6 pt-4">
+          <h1 className="text-3xl font-bold text-tes-gold">{character.name}</h1>
+          <p className="text-tes-parchment/70">
+            {raceName} {className}
+            {character.isMaster && (
+              <span className="ml-2 rounded bg-tes-gold/20 px-2 py-0.5 text-xs text-tes-gold">
+                Master
+              </span>
+            )}
+          </p>
+        </div>
+      )}
 
       {/* Images Section - Horizontally scrollable */}
       <div className="overflow-x-auto px-6 pb-6">

@@ -152,3 +152,33 @@ export interface CharacterActions {
   toggleMaster: (characterId: string) => void
   resetState: () => void
 }
+
+// Campaign Types
+export interface Campaign {
+  id: string
+  number: number
+  name: string
+  characterIds: string[]
+  day: number
+  partyXp: number
+  characterHp: Record<string, number>
+  characterXp: Record<string, number>
+  overland: MapId | null
+  guild: string
+  guildQuests: string[]
+  createdAt: number
+}
+
+export interface CampaignState {
+  campaigns: Campaign[]
+  selectedCampaignId: string | null
+}
+
+export interface CampaignActions {
+  fetchCampaigns: () => Promise<void>
+  addCampaign: (characterIds: string[]) => Promise<void>
+  updateCampaign: (id: string, updates: Partial<Omit<Campaign, "id" | "number">>) => Promise<void>
+  removeCampaign: (id: string) => Promise<void>
+  selectCampaign: (id: string | null) => void
+  resetState: () => void
+}

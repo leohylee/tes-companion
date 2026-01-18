@@ -12,9 +12,14 @@ services:
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true
+      - MONGODB_URI=mongodb://mongo:27017/tes-companion
+      - NEXTAUTH_SECRET=dev-secret-change-in-production
+      - NEXTAUTH_URL=http://localhost:3000
+    depends_on:
+      - mongo
     restart: unless-stopped
 
-  # Production service (use: docker compose up app-prod)
+  # Production service (use: docker compose --profile prod up)
   app-prod:
     build:
       context: .
@@ -23,6 +28,22 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/tes-companion
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-change-this-secret-in-production}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+    depends_on:
+      - mongo
     restart: unless-stopped
     profiles:
       - prod
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

@@ -1,7 +1,6 @@
 "use client"
 
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
 import {
   CharacterState,
   CharacterActions,
@@ -14,13 +13,22 @@ import {
   SkillPage,
 } from "@/types"
 
-const initialState: CharacterState = {
-  characters: [],
-  selectedCharacterId: null,
+interface ExtendedCharacterState extends CharacterState {
+  loading: boolean
+  error: string | null
 }
 
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 11)
+interface ExtendedCharacterActions extends CharacterActions {
+  fetchCharacters: () => Promise<void>
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+}
+
+const initialState: ExtendedCharacterState = {
+  characters: [],
+  selectedCharacterId: null,
+  loading: false,
+  error: null,
 }
 
 // Race display names
@@ -83,80 +91,201 @@ export function getSkillImagePath(skillId: SkillId, page: SkillPage): string {
   return `/images/skills/${skillId}-${page}.png`
 }
 
-export const useCharacterStore = create<CharacterState & CharacterActions>()(
-  persist(
-    (set) => ({
-      ...initialState,
+export const useCharacterStore = create<ExtendedCharacterState & ExtendedCharacterActions>()(
+  (set, get) => ({
+    ...initialState,
 
-      addCharacter: (character) => {
-        const newCharacter: Character = {
-          ...character,
-          id: generateId(),
+    setLoading: (loading) => set({ loading }),
+    setError: (error) => set({ error }),
+
+    fetchCharacters: async () => {
+      set({ loading: true, error: null })
+      try {
+        const res = await fetch("/api/characters")
+        if (!res.ok) {
+          throw new Error("Failed to fetch characters")
         }
+        const characters = await res.json()
+        set({ characters, loading: false })
+      } catch (error) {
+        set({ error: (error as Error).message, loading: false })
+      }
+    },
+
+    addCharacter: async (character) => {
+      set({ loading: true, error: null })
+      try {
+        const res = await fetch("/api/characters", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(character),
+        })
+        if (!res.ok) {
+          throw new Error("Failed to create character")
+        }
+        const newCharacter = await res.json()
         set((state) => ({
           characters: [...state.characters, newCharacter],
           selectedCharacterId: newCharacter.id,
+          loading: false,
         }))
-      },
+      } catch (error) {
+        set({ error: (error as Error).message, loading: false })
+      }
+    },
 
-      updateCharacter: (id, updates) => {
-        set((state) => ({
-          characters: state.characters.map((c) =>
-            c.id === id ? { ...c, ...updates } : c
-          ),
-        }))
-      },
+    updateCharacter: async (id, updates) => {
+      // Optimistic update
+      const previousCharacters = get().characters
+      set((state) => ({
+        characters: state.characters.map((c) =>
+          c.id === id ? { ...c, ...updates } : c
+        ),
+      }))
 
-      removeCharacter: (id) => {
-        set((state) => ({
-          characters: state.characters.filter((c) => c.id !== id),
-          selectedCharacterId:
-            state.selectedCharacterId === id ? null : state.selectedCharacterId,
-        }))
-      },
-
-      selectCharacter: (id) => {
-        set({ selectedCharacterId: id })
-      },
-
-      addSkill: (characterId, skillId) => {
-        const newSkill: Skill = {
-          id: generateId(),
-          skillId,
+      try {
+        const res = await fetch(`/api/characters/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        })
+        if (!res.ok) {
+          throw new Error("Failed to update character")
         }
+        const updatedCharacter = await res.json()
         set((state) => ({
           characters: state.characters.map((c) =>
-            c.id === characterId
-              ? { ...c, skills: [...c.skills, newSkill] }
-              : c
+            c.id === id ? updatedCharacter : c
           ),
         }))
-      },
+      } catch (error) {
+        // Rollback on error
+        set({ characters: previousCharacters, error: (error as Error).message })
+      }
+    },
 
-      removeSkill: (characterId, skillId) => {
-        set((state) => ({
-          characters: state.characters.map((c) =>
-            c.id === characterId
-              ? { ...c, skills: c.skills.filter((s) => s.id !== skillId) }
-              : c
-          ),
-        }))
-      },
+    removeCharacter: async (id) => {
+      // Optimistic update
+      const previousState = {
+        characters: get().characters,
+        selectedCharacterId: get().selectedCharacterId,
+      }
+      set((state) => ({
+        characters: state.characters.filter((c) => c.id !== id),
+        selectedCharacterId:
+          state.selectedCharacterId === id ? null : state.selectedCharacterId,
+      }))
 
-      toggleMaster: (characterId) => {
-        set((state) => ({
-          characters: state.characters.map((c) =>
-            c.id === characterId ? { ...c, isMaster: !c.isMaster } : c
-          ),
-        }))
-      },
+      try {
+        const res = await fetch(`/api/characters/${id}`, {
+          method: "DELETE",
+        })
+        if (!res.ok) {
+          throw new Error("Failed to delete character")
+        }
+      } catch (error) {
+        // Rollback on error
+        set({ ...previousState, error: (error as Error).message })
+      }
+    },
 
-      resetState: () => {
-        set(initialState)
-      },
-    }),
-    {
-      name: "tes-companion-character-store",
-    }
-  )
+    selectCharacter: (id) => {
+      set({ selectedCharacterId: id })
+    },
+
+    addSkill: async (characterId, skillId) => {
+      const character = get().characters.find((c) => c.id === characterId)
+      if (!character) return
+
+      const newSkill: Skill = {
+        id: skillId, // Use skillId as id
+        skillId,
+      }
+      const updatedSkills = [...character.skills, newSkill]
+
+      // Optimistic update
+      set((state) => ({
+        characters: state.characters.map((c) =>
+          c.id === characterId ? { ...c, skills: updatedSkills } : c
+        ),
+      }))
+
+      try {
+        const res = await fetch(`/api/characters/${characterId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skills: updatedSkills }),
+        })
+        if (!res.ok) {
+          throw new Error("Failed to add skill")
+        }
+      } catch (error) {
+        // Rollback - refetch characters
+        get().fetchCharacters()
+        set({ error: (error as Error).message })
+      }
+    },
+
+    removeSkill: async (characterId, skillId) => {
+      const character = get().characters.find((c) => c.id === characterId)
+      if (!character) return
+
+      const updatedSkills = character.skills.filter((s) => s.id !== skillId)
+
+      // Optimistic update
+      set((state) => ({
+        characters: state.characters.map((c) =>
+          c.id === characterId ? { ...c, skills: updatedSkills } : c
+        ),
+      }))
+
+      try {
+        const res = await fetch(`/api/characters/${characterId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skills: updatedSkills }),
+        })
+        if (!res.ok) {
+          throw new Error("Failed to remove skill")
+        }
+      } catch (error) {
+        // Rollback - refetch characters
+        get().fetchCharacters()
+        set({ error: (error as Error).message })
+      }
+    },
+
+    toggleMaster: async (characterId) => {
+      const character = get().characters.find((c) => c.id === characterId)
+      if (!character) return
+
+      const newIsMaster = !character.isMaster
+
+      // Optimistic update
+      set((state) => ({
+        characters: state.characters.map((c) =>
+          c.id === characterId ? { ...c, isMaster: newIsMaster } : c
+        ),
+      }))
+
+      try {
+        const res = await fetch(`/api/characters/${characterId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isMaster: newIsMaster }),
+        })
+        if (!res.ok) {
+          throw new Error("Failed to toggle master")
+        }
+      } catch (error) {
+        // Rollback - refetch characters
+        get().fetchCharacters()
+        set({ error: (error as Error).message })
+      }
+    },
+
+    resetState: () => {
+      set(initialState)
+    },
+  })
 )

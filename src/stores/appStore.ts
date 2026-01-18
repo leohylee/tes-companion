@@ -3,7 +3,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
-export type ToolId = "overland-maps" | "characters"
+export type ToolId = "overland-maps" | "characters" | "campaigns"
 export type ReferenceId = "initial-setup" | "campaign-stages" | "day-phases" | "combat"
 export type ViewId = ToolId | ReferenceId
 
@@ -16,6 +16,7 @@ export interface NavItem {
 export const tools: NavItem[] = [
   { id: "overland-maps", name: "Overland Maps", icon: "🗺️" },
   { id: "characters", name: "Characters", icon: "👤" },
+  { id: "campaigns", name: "Campaigns", icon: "⚔️" },
 ]
 
 export const references: NavItem[] = [

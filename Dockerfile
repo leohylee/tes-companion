@@ -29,7 +29,16 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Build-time environment variables (needed for Next.js build)
+ARG MONGODB_URI=mongodb://mongo:27017/tes-companion
+ARG NEXTAUTH_SECRET=build-time-secret
+ARG NEXTAUTH_URL=http://localhost:3000
+
+ENV MONGODB_URI=$MONGODB_URI
+ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+ENV NEXTAUTH_URL=$NEXTAUTH_URL
 ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build
 
 # Production image
