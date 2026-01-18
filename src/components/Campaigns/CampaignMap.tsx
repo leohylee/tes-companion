@@ -10,6 +10,7 @@ import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react"
 import { Campaign, Token, Position, MapId } from "@/types"
 import { useCampaignStore } from "@/stores/campaignStore"
 import { maps } from "@/data/maps"
+import { ReferenceImages } from "@/components/OverlandMap/ReferenceImages"
 
 interface CampaignMapProps {
   campaign: Campaign
@@ -21,7 +22,7 @@ export function CampaignMap({ campaign }: CampaignMapProps) {
 
   const [saving, setSaving] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Local state for map data
   const [localTokens, setLocalTokens] = useState<Token[]>(campaign.mapTokens || [])
@@ -152,6 +153,11 @@ export function CampaignMap({ campaign }: CampaignMapProps) {
 
   return (
     <div className="relative h-full w-full">
+      {/* Reference Images - Floating */}
+      {currentMap.referenceImages && (
+        <ReferenceImages images={currentMap.referenceImages} />
+      )}
+
       {/* Control Panel - Top Right */}
       <div className="absolute right-4 top-4 z-20 w-72 rounded-lg bg-tes-dark/90 shadow-xl backdrop-blur">
         {/* Header */}
